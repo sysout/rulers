@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 class TestController < Rulers::Controller
   def index
-    "Hello!"
+    response("Hello!", status = 200, headers = {})
   end
 end
 
