@@ -15,7 +15,16 @@ module Rulers
       klass, act = get_controller_and_action(env)
       controller = klass.new(env)
       text = controller.send(act)
-      [200, {'Content-Type' => 'text/html'}, [text]]
+      if !controller.get_response
+        assigns={}
+        controller.instance_variables.each_with_object({}) do |key, hash|
+          assigns[key[1..-1].to_sym] = controller.instance_variable_get key
+        end
+        controller.response(controller.render(act, **assigns), status = 200, headers = {})
+        [200, {'Content-Type' => 'text/html'}, [text]]
+      end
+      st, hd, rs = controller.get_response.to_a
+      [st, hd, [rs.body].flatten]
     end
   end
 end

@@ -7,6 +7,20 @@ module Rulers
       @env = env
     end
 
+    def response(text, status = 200, headers = {})
+      raise "Already responded!" if @response
+      a = [text].flatten
+      @response = Rack::Response.new(a, status, headers)
+    end
+
+    def get_response
+      @response
+    end
+
+    def render_response(*args)
+      response(render(*args))
+    end
+
     def env
       @env
     end
@@ -20,6 +34,14 @@ module Rulers
 
     def controller_name
       Rulers.to_underscore(self.class.name.gsub(/Controller$/, ""))
+    end
+
+    def request
+      @request ||= Rack::Request.new(@env)
+    end
+
+    def params
+      request.params
     end
   end
 
